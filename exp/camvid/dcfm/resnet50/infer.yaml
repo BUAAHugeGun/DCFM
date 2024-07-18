@@ -1,0 +1,97 @@
+processes:
+  cityscapes:
+    process: test_data
+    input_name: 
+      - video_id
+    output_name: 
+      - scales
+      - frames
+      - gt
+      - image_size
+      - sims
+      - frame_path
+    tag: camvid
+    args:
+      tag: video_test
+      path: ./data/camvid
+      size: 768
+      multi_scale: False
+      use_flip: False
+      R: 1
+  
+  ED:
+    process: test_model
+    input_name:
+      - frames
+      - image_size
+      - sims
+    output_name:
+      - preds
+      - infer_time
+    mode: video
+    
+    encoder:
+      ckpt: encoder
+      tag: dcfm
+      args:
+        tag: video_encoder
+        backbone: pspnet50
+        high_level_ch: 4096
+    
+    decoder:
+      ckpt: decoder
+      tag: dcfm
+      args:
+        tag: video_decoder
+        num_classes: 11
+        # head_ch: 512
+        head_nums: 1
+        head_drop: 0.1
+        high_level_ch: 4096
+        bot_ch: 1280
+        stage1_ch: 128
+    K: 2
+
+  celoss:
+    process: test_metric
+    input_name:
+      - preds
+      - gt
+    output_name:
+      - metric/CE
+    tag: CE
+    args:
+      ignore_index: 255
+    video_test: True
+
+  MIOU:
+    process: test_metric
+    input_name:
+      - preds
+      - gt
+    output_name:
+      - metric/mIoU
+    tag: mIoU
+    args:
+      C: 11
+    video_test: True
+
+  time:
+    process: test_metric
+    input_name:
+      - infer_time
+    output_name:
+      - metric/time
+    tag: test_time
+    video_test: False
+
+  # save:
+  #   process: video_save
+  #   input_name:
+  #     - frames
+  #     - preds
+  #     - frame_path
+
+test: 
+  cicle: 2
+  load_iter: 30800

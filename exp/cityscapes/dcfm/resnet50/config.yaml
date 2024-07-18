@@ -1,0 +1,159 @@
+processes:
+  cityscapes:
+    process: data
+    input_name: 
+    output_name: 
+      - x
+      - x_ref
+      - y
+      - filename
+    bs: 8
+    num_workers: 4
+    tag: cityscapes
+    args:
+      path: ./data/cityscapes_video
+      size: 768
+      wh: 2.
+      nums: -1
+  
+  encoder:
+    process: model
+    input_name:
+      - x
+      - x_ref
+    output_name:
+      - feature
+      - stage1_feature
+    ddp: True
+    tag: dcfm
+    args:
+      tag: video_encoder
+      backbone: pspnet50
+      high_level_ch: 4096 # cityscapes
+
+    opt: 
+      lr: 0.01
+      tag: SGD
+      weight_decay: 0.0005
+      momentum: 0.9
+    sch: 
+      tag: PolyScheduler
+      T_max: 80000
+      power: 0.9
+      eta_min: 0.0001
+  
+  decoder:
+    process: model
+    input_name:
+      - feature
+      - stage1_feature
+      - y
+    output_name:
+      - y_L
+      - y_L_hat
+      - f_L
+      - f_L_hat
+      - mf_L
+      - mf_U
+    ddp: True
+    tag: dcfm
+    args:
+      tag: video_decoder
+      num_classes: 19
+      # head_ch: 256 # works when head_nums = 2
+      head_nums: 1
+      head_drop: 0.1
+      high_level_ch: 4096 # cityscapes
+      bot_ch: 1280
+      stage1_ch: 128
+
+    opt: 
+      lr: 0.01 # 10 times for segformer
+      tag: SGD
+      weight_decay: 0.0005
+      momentum: 0.9
+    sch: 
+      tag: PolyScheduler
+      T_max: 80000
+      power: 0.9
+      eta_min: 0.0001
+
+  celoss_I:
+    process: metric
+    input_name:
+      - y_L
+      - y
+    output_name:
+      - loss/CE
+    tag: CE
+    args:
+      ignore_index: 255
+    lambda: 1.0
+
+  celoss_B:
+    process: metric
+    input_name:
+      - y_L_hat
+      - y
+    output_name:
+      - loss/CE_B
+    tag: CE
+    args:
+      ignore_index: 255
+    lambda: 0.4
+  
+  Loss_F:
+    process: metric
+    input_name:
+      - f_L
+      - f_L_hat
+    output_name:
+      - loss/f
+    tag: MSE
+    lambda: 0.0
+
+  Loss_PC:
+    process: metric
+    input_name:
+      - mf_L
+      - mf_U
+    output_name:
+      - loss/PC
+    tag: MSE
+    lambda: 10
+  
+  MIOU:
+    process: metric
+    input_name:
+      - y_L
+      - y
+    output_name:
+      - metric/mIoU
+    tag: mIoU
+    args:
+      C: 19
+    workplace: 
+      - valid
+    lambda: 1.0
+
+  MIOU_B:
+    process: metric
+    input_name:
+      - y_L_hat
+      - y
+    output_name:
+      - metric/mIoU_B
+    tag: mIoU
+    args:
+      C: 19
+    workplace: 
+      - valid
+    lambda: 1.0
+
+train:
+  seed: 1
+  max_iter: 80000
+  load_iter: -1
+  show_interval: 20
+  snapshot_interval: 4000
+  valid_interval: 4000

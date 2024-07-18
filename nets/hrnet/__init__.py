@@ -1,0 +1,1 @@
+from nets.hrnet import seg_hrnet

@@ -1,0 +1,6 @@
+__pycache__
+*.pth
+*.png
+data
+result
+*.txt
