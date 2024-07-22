@@ -3,6 +3,8 @@ Deep Common Feature Mining for Efficient Video Semantic Segmentation
 
 This repository is the official implementation of "Deep Common Feature Mining for Efficient Video Semantic Segmentation".  This paper is under submission, we will show it later.
 
+![](./resources/framework.png)
+
 ## Install & Requirements
 
 Please follow the guidelines in [mmsegmentation](https://github.com/open-mmlab/mmsegmentation)
@@ -91,7 +93,7 @@ torchrun --nproc_per_node=4 --master_port=<port> ./tools/train.py --root ./exp/v
 ```
 The checkpoints and output information generated during training will be saved in the `<exp_folder>/logs` directory under the experiment directory, such as `./exp/vspw/dcfm/mitb2/logs`.
 ### Test
-Download the trained weights from[here](), and place the `*.pth` files in `<exp_folder>/logs/`.
+Download the trained weights from [here](https://drive.google.com/drive/folders/16hKVz2-QeE81CGSL40KC-EECgllwEbS9?usp=drive_link), and place the `*.pth` files in `<exp_folder>/logs/`.
 ```shell
 python ./tools/test.py --root ./exp/vspw/dcfm/mitb2/infer.yaml --k 2
 ```
