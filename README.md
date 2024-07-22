@@ -76,17 +76,6 @@ Download weights ([resnet18](https://download.pytorch.org/models/resnet18-5c106c
 
 Place the `.pth` files in `DCFM/pretrain` directory.
 
-## Acknowledgement
-The code is heavily based on the following repositories:
-
-- https://github.com/GuoleiSun/VSS-CFFM
-
-- https://github.com/NVlabs/SegFormer
-
-- https://github.com/hszhao/semseg/
-
-Thanks for their amazing works.
-
 ### Training
 ```shell
 torchrun --nproc_per_node=4 --master_port=<port> ./tools/train.py --root ./exp/vspw/dcfm/mitb2 --gpus 0,1,2,3
@@ -98,3 +87,14 @@ Download the trained weights from [here](https://drive.google.com/drive/folders/
 python ./tools/test.py --root ./exp/vspw/dcfm/mitb2/infer.yaml --k 2
 ```
 The output generated during the testing process will be saved in a text file with the same name under the experiment directory, and the final testing results will be incrementally saved in `results.txt` under the experiment directory, such as `./exp/vspw/dcfm/mitb2/infer.txt` and `./exp/vspw/dcfm/mitb2/results.txt`.
+
+## Acknowledgement
+The code is heavily based on the following repositories:
+
+- https://github.com/GuoleiSun/VSS-CFFM
+
+- https://github.com/NVlabs/SegFormer
+
+- https://github.com/hszhao/semseg/
+
+Thanks for their amazing works.
