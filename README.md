@@ -1,7 +1,7 @@
 # DCFM
 Deep Common Feature Mining for Efficient Video Semantic Segmentation
 
-This repository is the official implementation of "Deep Common Feature Mining for Efficient Video Semantic Segmentation".  This paper is under submission, we will show it later.
+This repository is the official implementation of ![Deep Common Feature Mining for Efficient Video Semantic Segmentation](https://ieeexplore.ieee.org/abstract/document/10632169/).
 
 ![](./resources/framework.png)
 
